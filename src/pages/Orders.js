@@ -10,7 +10,7 @@ const Orders = () => {
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [paymentFilter, setPaymentFilter] = useState('all');
+  const [paymentFilter] = useState('all');
 
   useEffect(() => {
     loadOrders();

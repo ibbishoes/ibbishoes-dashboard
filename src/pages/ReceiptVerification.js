@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { GetWithAuth, PutWithAuth } from '../utils/api';
 
 const ReceiptVerification = () => {
@@ -24,11 +24,7 @@ const ReceiptVerification = () => {
     hasMore: false
   });
 
-  useEffect(() => {
-    loadReceipts();
-  }, [filters]);
-
-  const loadReceipts = async () => {
+  const loadReceipts = useCallback(async () => {
     try {
       setLoading(true);
       const queryParams = new URLSearchParams();
@@ -53,7 +49,11 @@ const ReceiptVerification = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filters]);
+
+  useEffect(() => {
+    loadReceipts();
+  }, [loadReceipts]);
 
   const handleStatusChange = async (orderId, newStatus, reason = null) => {
     try {

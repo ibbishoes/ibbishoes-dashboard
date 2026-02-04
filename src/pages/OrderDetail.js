@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { GetWithAuth, PutWithAuth } from '../utils/api';
 import './OrderDetail.css';
@@ -12,11 +12,7 @@ const OrderDetail = () => {
   const [successMsg, setSuccessMsg] = useState('');
   const [updatingStatus, setUpdatingStatus] = useState(false);
 
-  useEffect(() => {
-    loadOrder();
-  }, [id]);
-
-  const loadOrder = async () => {
+  const loadOrder = useCallback(async () => {
     try {
       setLoading(true);
       const data = await GetWithAuth(`/orders/${id}`);
@@ -27,7 +23,11 @@ const OrderDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    loadOrder();
+  }, [loadOrder]);
 
   const handleStatusChange = async (newStatus) => {
     try {

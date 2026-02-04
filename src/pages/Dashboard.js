@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { GetWithAuth } from '../utils/api';
 import './Dashboard.css';
 
@@ -9,11 +9,7 @@ const Dashboard = () => {
     loading: true
   });
 
-  useEffect(() => {
-    loadStats();
-  }, []);
-
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     try {
       const [productsData, categoriesData] = await Promise.all([
         GetWithAuth('/products'),
@@ -27,9 +23,13 @@ const Dashboard = () => {
       });
     } catch (error) {
       console.error('Error cargando estadísticas:', error);
-      setStats({ ...stats, loading: false });
+      setStats(prev => ({ ...prev, loading: false }));
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadStats();
+  }, [loadStats]);
 
   if (stats.loading) {
     return <div className="loading">Cargando estadísticas...</div>;

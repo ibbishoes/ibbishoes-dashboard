@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { GetWithAuth, PutWithAuth, PostWithAuth, SERVER_URL } from '../utils/api';
+import { GetWithAuth, PutWithAuth, PostWithAuth } from '../utils/api';
 import './ReservationPlanDetail.css';
 
 const ReservationPlanDetail = () => {
@@ -14,11 +14,7 @@ const ReservationPlanDetail = () => {
   const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0]);
   const [paymentNotes, setPaymentNotes] = useState('');
 
-  useEffect(() => {
-    loadPlan();
-  }, [id]);
-
-  const loadPlan = async () => {
+  const loadPlan = useCallback(async () => {
     try {
       setLoading(true);
       const data = await GetWithAuth(`/reservation-plans/${id}`);
@@ -30,7 +26,11 @@ const ReservationPlanDetail = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    loadPlan();
+  }, [loadPlan]);
 
   const handleVerifyPayment = async (paymentId) => {
     try {

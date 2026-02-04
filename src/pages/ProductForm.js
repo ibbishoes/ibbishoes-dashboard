@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { GetWithAuth, PostWithAuth, PutWithAuth } from '../utils/api';
 import './ProductForm.css';
@@ -27,13 +27,6 @@ const ProductForm = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    loadCategories();
-    if (isEdit) {
-      loadProduct();
-    }
-  }, [id]);
-
   const loadCategories = async () => {
     try {
       const data = await GetWithAuth('/categories');
@@ -43,7 +36,7 @@ const ProductForm = () => {
     }
   };
 
-  const loadProduct = async () => {
+  const loadProduct = useCallback(async () => {
     try {
       const data = await GetWithAuth(`/products/${id}`);
       const product = data.product;
@@ -72,7 +65,14 @@ const ProductForm = () => {
     } catch (err) {
       setError('Error al cargar producto');
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    loadCategories();
+    if (isEdit) {
+      loadProduct();
+    }
+  }, [isEdit, loadProduct]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;

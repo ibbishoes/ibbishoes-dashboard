@@ -1,20 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { GetWithAuth, PutWithAuth } from '../utils/api';
+import { GetWithAuth } from '../utils/api';
 import './ReservationPlans.css';
 
 const ReservationPlans = () => {
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
+  const [successMsg] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
 
-  useEffect(() => {
-    loadPlans();
-  }, [filterStatus]);
-
-  const loadPlans = async () => {
+  const loadPlans = useCallback(async () => {
     try {
       setLoading(true);
       const url = filterStatus ? `/reservation-plans?status=${filterStatus}` : '/reservation-plans';
@@ -26,18 +22,11 @@ const ReservationPlans = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [filterStatus]);
 
-  const handleVerifyPayment = async (paymentId) => {
-    try {
-      await PutWithAuth(`/reservation-plans/payments/${paymentId}/verify`, {});
-      setSuccessMsg('Pago verificado exitosamente');
-      setTimeout(() => setSuccessMsg(''), 3000);
-      loadPlans();
-    } catch (err) {
-      setError(err.message || 'Error al verificar pago');
-    }
-  };
+  useEffect(() => {
+    loadPlans();
+  }, [loadPlans]);
 
   const formatDate = (dateString) => {
     if (!dateString) return '-';

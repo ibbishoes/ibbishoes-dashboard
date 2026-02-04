@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { GetWithAuth, PutWithAuth } from '../utils/api';
 import './Settings.css';
 
@@ -42,22 +42,22 @@ const Settings = () => {
     team: []
   });
 
-  useEffect(() => {
-    loadSettings();
-  }, []);
-
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     try {
       setLoading(true);
       const data = await GetWithAuth('/settings');
-      setSettings(data.settings || settings);
+      setSettings(prev => data.settings || prev);
       setError('');
     } catch (err) {
       setError(err.message || 'Error al cargar configuraciones');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadSettings();
+  }, [loadSettings]);
 
   const handleChange = (section, field, value) => {
     setSettings(prev => ({
